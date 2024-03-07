@@ -3,8 +3,9 @@ package jwtauth
 import (
 	"time"
 
-	"github.com/golang-jwt/jwt/v5"
 	"github.com/kerucko/auth/internal/models"
+
+	"github.com/golang-jwt/jwt/v5"
 )
 
 func NewToken(user models.User, app models.App, expiration time.Duration) (string, error) {

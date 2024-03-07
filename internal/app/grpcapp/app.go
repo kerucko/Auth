@@ -6,6 +6,7 @@ import (
 	"net"
 
 	authgrpc "github.com/kerucko/auth/internal/grpc/auth"
+
 	"google.golang.org/grpc"
 )
 
@@ -14,9 +15,9 @@ type Server struct {
 	Port       int
 }
 
-func NewServer(port int) *Server {
+func NewServer(port int, auth authgrpc.Auth) *Server {
 	grpcServer := grpc.NewServer()
-	authgrpc.Register(grpcServer)
+	authgrpc.Register(grpcServer, auth)
 	return &Server{
 		GrpcServer: grpcServer,
 		Port:       port,
