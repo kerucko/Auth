@@ -13,6 +13,12 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+var (
+	errInvalidEmailOrPassword = errors.New("invalid email or password")
+	errUserExists             = errors.New("user exists")
+	errInvalidAppId           = errors.New("invalid app id")
+)
+
 type Auth struct {
 	UserSaver       UserSaver
 	UserProvider    UserProvider
@@ -57,7 +63,7 @@ func (a *Auth) Register(ctx context.Context, email string, password string) (int
 		log.Printf("%s: %v", op, err)
 
 		if errors.Is(err, storage.ErrUserExists) {
-			return 0, fmt.Errorf("%s: %w", op, "user exists")
+			return 0, fmt.Errorf("%s: %w", op, errUserExists)
 		}
 		return 0, fmt.Errorf("%s: %w", op, err)
 	}
@@ -75,14 +81,14 @@ func (a *Auth) Login(ctx context.Context, email string, password string, appId i
 		log.Printf("%s: %v", op, err)
 
 		if errors.Is(err, storage.ErrUserNotFound) {
-			return "", fmt.Errorf("%s: %w", op, "invalid email or password")
+			return "", fmt.Errorf("%s: %w", op, errInvalidEmailOrPassword)
 		}
 		return "", fmt.Errorf("%s: %w", op, err)
 	}
 
 	if err := bcrypt.CompareHashAndPassword(user.PasswordHash, []byte(password)); err != nil {
 		log.Printf("%s: %v", op, err)
-		return "", fmt.Errorf("%s: %w", op, "invalid email or password")
+		return "", fmt.Errorf("%s: %w", op, errInvalidEmailOrPassword)
 	}
 
 	app, err := a.AppProvider.FindApp(ctx, appId)
@@ -90,16 +96,16 @@ func (a *Auth) Login(ctx context.Context, email string, password string, appId i
 		log.Printf("%s: %v", op, err)
 
 		if errors.Is(err, storage.ErrAppNotFound) {
-			return "", fmt.Errorf("%s: %w", op, "invalid app id")
+			return "", fmt.Errorf("%s: %w", op, errInvalidAppId)
 		}
 		return "", fmt.Errorf("%s: %w", op, err)
 	}
 
-	log.Printf("%s: user logged succesfully")
+	log.Printf("%s: user logged succesfully", op)
 
 	token, err := jwtauth.NewToken(user, app, a.TokenExpiration)
 	if err != nil {
-		log.Printf("%s: failed tp generate token; %w", op, err)
+		log.Printf("%s: failed tp generate token; %s", op, err.Error())
 		return "", fmt.Errorf("%s: %w", op, err)
 	}
 
