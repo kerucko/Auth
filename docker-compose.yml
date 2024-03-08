@@ -4,7 +4,18 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    command: sh -c "sleep 10 && make migrate && ./auth"
     ports:
       - 50051:50051
+    depends_on:
+      - db
     environment:
       - CONFIG_PATH=./configs/config.yaml
+  db:
+    container_name: postgres
+    restart: always
+    image: "postgres:15.4-alpine"
+    environment:
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - "5436:5432"
