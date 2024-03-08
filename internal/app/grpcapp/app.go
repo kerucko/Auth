@@ -5,26 +5,26 @@ import (
 	"log"
 	"net"
 
-	authgrpc "github.com/kerucko/auth/internal/grpc/auth"
+	"github.com/kerucko/auth/internal/server"
 
 	"google.golang.org/grpc"
 )
- 
-type Server struct {
+
+type App struct {
 	GrpcServer *grpc.Server
 	Port       int
 }
 
-func NewServer(port int, auth authgrpc.Auth) *Server {
+func NewApp(port int, auth server.Auth) *App {
 	grpcServer := grpc.NewServer()
-	authgrpc.Register(grpcServer, auth)
-	return &Server{
+	server.Register(grpcServer, auth)
+	return &App{
 		GrpcServer: grpcServer,
 		Port:       port,
 	}
 }
 
-func (a *Server) Run() error {
+func (a *App) Run() error {
 	op := "grpcapp.Run"
 	log.Println("Starting gRPC server")
 	l, err := net.Listen("tcp", fmt.Sprintf(":%d", a.Port))
@@ -39,7 +39,7 @@ func (a *Server) Run() error {
 	return nil
 }
 
-func (a *Server) Stop() {
+func (a *App) Stop() {
 	log.Println("Stopping gRPC server")
 	a.GrpcServer.GracefulStop()
 }

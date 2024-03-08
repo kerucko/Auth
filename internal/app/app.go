@@ -8,13 +8,13 @@ import (
 )
 
 type App struct {
-	GrpcServer *grpcapp.Server
+	GrpcServer *grpcapp.App
 }
 
 func NewApp(cfg config.Config) *App {
 	storage := storage.NewStorage(cfg.Database.Host, cfg.Database.Port, cfg.Database.Dbname, cfg.Database.User, cfg.Database.Password, cfg.Database.Timeout)
 	authService := auth.NewAuth(storage, storage, storage, cfg.ToketExpiration)
-	grpcApp := grpcapp.NewServer(cfg.Grpc.Port, authService)
+	grpcApp := grpcapp.NewApp(cfg.Grpc.Port, authService)
 
 	return &App{
 		GrpcServer: grpcApp,

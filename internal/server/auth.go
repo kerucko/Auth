@@ -1,10 +1,10 @@
-package auth
+package server
 
 import (
 	"context"
 
 	api "github.com/kerucko/auth/pkg/api/auth"
-	
+
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
