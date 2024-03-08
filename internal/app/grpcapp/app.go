@@ -9,7 +9,7 @@ import (
 
 	"google.golang.org/grpc"
 )
-
+ 
 type Server struct {
 	GrpcServer *grpc.Server
 	Port       int
@@ -31,6 +31,7 @@ func (a *Server) Run() error {
 	if err != nil {
 		return fmt.Errorf("%s: %w", op, err)
 	}
+
 	log.Println("Running gRPC server on port", a.Port)
 	if err := a.GrpcServer.Serve(l); err != nil {
 		return fmt.Errorf("%s: %w", op, err)
