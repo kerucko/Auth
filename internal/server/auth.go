@@ -2,7 +2,9 @@ package server
 
 import (
 	"context"
+	"errors"
 
+	"github.com/kerucko/auth/internal/services/auth"
 	api "github.com/kerucko/auth/pkg/api/auth"
 
 	"google.golang.org/grpc"
@@ -32,7 +34,9 @@ func (s *ServerAPI) Register(ctx context.Context, request *api.RegisterRequest) 
 
 	userId, err := s.auth.Register(ctx, request.GetEmail(), request.GetPassword())
 	if err != nil {
-		// TODO: существующий email
+		if errors.Is(err, auth.ErrUserExists) {
+			return nil, status.Error(codes.AlreadyExists, err.Error())
+		}
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 	return &api.RegisterResponse{UserId: userId}, nil
@@ -48,6 +52,13 @@ func (s *ServerAPI) Login(ctx context.Context, request *api.LoginRequest) (*api.
 
 	token, err := s.auth.Login(ctx, request.GetEmail(), request.GetPassword(), int(request.GetAppId()))
 	if err != nil {
+		if errors.Is(err, auth.ErrInvalidEmailOrPassword) {
+			return nil, status.Error(codes.InvalidArgument, err.Error())
+		}
+		if errors.Is(err, auth.ErrInvalidAppId) {
+			return nil, status.Error(codes.InvalidArgument, err.Error())
+		}
+
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 

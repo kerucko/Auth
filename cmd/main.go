@@ -27,5 +27,4 @@ func main() {
 	log.Println("stopping application due to signal: ", recievedSignal)
 	applicaton.GrpcServer.Stop()
 	log.Println("application stopped")
-	// TODO: graceful shutdown for database
 }

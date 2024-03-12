@@ -14,17 +14,17 @@ type Config struct {
 }
 
 type GrpcConfig struct {
-	Port    int    `yaml:"port"`
-	Timeout string `yaml:"timeout"`
+	Port    int           `yaml:"port"`
+	Timeout time.Duration `yaml:"timeout"`
 }
 
 type DatabaseConfig struct {
-	Host     string `yaml:"host"`
-	Port     int    `yaml:"port"`
-	Dbname   string `yaml:"dbname"`
-	User     string `yaml:"user"`
-	Password string `yaml:"password"`
-	Timeout  string `yaml:"timeout"`
+	Host     string        `yaml:"host"`
+	Port     int           `yaml:"port"`
+	Dbname   string        `yaml:"dbname"`
+	User     string        `yaml:"user"`
+	Password string        `yaml:"password"`
+	Timeout  time.Duration `yaml:"timeout"`
 }
 
 func MustReadConfig() Config {

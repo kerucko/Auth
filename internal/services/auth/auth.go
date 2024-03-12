@@ -10,14 +10,14 @@ import (
 	"github.com/kerucko/auth/internal/jwtauth"
 	"github.com/kerucko/auth/internal/models"
 	"github.com/kerucko/auth/internal/storage"
-	
+
 	"golang.org/x/crypto/bcrypt"
 )
 
 var (
-	errInvalidEmailOrPassword = errors.New("invalid email or password")
-	errUserExists             = errors.New("user exists")
-	errInvalidAppId           = errors.New("invalid app id")
+	ErrInvalidEmailOrPassword = errors.New("invalid email or password")
+	ErrUserExists             = errors.New("user exists")
+	ErrInvalidAppId           = errors.New("invalid app id")
 )
 
 type Auth struct {
@@ -64,7 +64,7 @@ func (a *Auth) Register(ctx context.Context, email string, password string) (int
 		log.Printf("%s: %v", op, err)
 
 		if errors.Is(err, storage.ErrUserExists) {
-			return 0, fmt.Errorf("%s: %w", op, errUserExists)
+			return 0, fmt.Errorf("%s: %w", op, ErrUserExists)
 		}
 		return 0, fmt.Errorf("%s: %w", op, err)
 	}
@@ -82,14 +82,14 @@ func (a *Auth) Login(ctx context.Context, email string, password string, appId i
 		log.Printf("%s: %v", op, err)
 
 		if errors.Is(err, storage.ErrUserNotFound) {
-			return "", fmt.Errorf("%s: %w", op, errInvalidEmailOrPassword)
+			return "", fmt.Errorf("%s: %w", op, ErrInvalidEmailOrPassword)
 		}
 		return "", fmt.Errorf("%s: %w", op, err)
 	}
 
 	if err := bcrypt.CompareHashAndPassword(user.PasswordHash, []byte(password)); err != nil {
 		log.Printf("%s: %v", op, err)
-		return "", fmt.Errorf("%s: %w", op, errInvalidEmailOrPassword)
+		return "", fmt.Errorf("%s: %w", op, ErrInvalidEmailOrPassword)
 	}
 
 	app, err := a.AppProvider.FindApp(ctx, appId)
@@ -97,7 +97,7 @@ func (a *Auth) Login(ctx context.Context, email string, password string, appId i
 		log.Printf("%s: %v", op, err)
 
 		if errors.Is(err, storage.ErrAppNotFound) {
-			return "", fmt.Errorf("%s: %w", op, errInvalidAppId)
+			return "", fmt.Errorf("%s: %w", op, ErrInvalidAppId)
 		}
 		return "", fmt.Errorf("%s: %w", op, err)
 	}
