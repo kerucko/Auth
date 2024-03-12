@@ -70,8 +70,7 @@ func (s *Storage) FindUser(ctx context.Context, email string) (models.User, erro
 	`
 
 	var user models.User
-	row := s.db.QueryRow(ctx, request, email)
-	err := row.Scan(&user.Id, &user.Email, &user.PasswordHash)
+	err := s.db.QueryRow(ctx, request, email).Scan(&user.Id, &user.Email, &user.PasswordHash)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			log.Printf("%s: %s", op, ErrUserNotFound.Error())
